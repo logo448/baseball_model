@@ -141,18 +141,20 @@ def get_event(v_players_perc, h_players_perc, batter, team):
     # figure out what event should be simulated
     if num <= b1:
         return '1B'
-    if b1 < num <= b2:
+    elif b1 < num <= b2:
         return '2B'
-    if b2 < num <= b3:
+    elif b2 < num <= b3:
         return '3B'
-    if b3 < num <= hr:
+    elif b3 < num <= hr:
         return 'HR'
-    if hr < num <= so:
+    elif hr < num <= so:
         return 'SO'
-    if so < num <= bb:
+    elif so < num <= bb:
         return 'BB'
-    if bb < num <= o:
+    elif bb < num <= o:
         return 'O'
+    else:
+        get_event(v_players_perc, h_players_perc, batter, team)
 
 tmp1, tmp2 = get_player_stats(_v_player_list, _h_player_list)
 tmp1, tmp2 = get_perc(tmp1, tmp2)
