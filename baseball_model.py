@@ -1,4 +1,5 @@
 import MySQLdb
+import random
 
 # setup global variables and objects
 _db = MySQLdb.connect("localhost", "root", "Logamund 448", "lahman")
@@ -16,8 +17,8 @@ _h_player_list = ["A.J. Pollock", "Aaron Hill", "Paul Goldschmidt",
 def get_player_stats(v_player_list, h_player_list):
     """Get the player stats"""
     # init
-    v_players = []
-    h_players = []
+    v_players_stats = []
+    h_players_stats = []
     counter = 0
 
     while counter <= 8:
@@ -63,15 +64,15 @@ def get_player_stats(v_player_list, h_player_list):
         h_tmp_stats['O'] = h_results[0][7]
 
         # add the current tmp players stats dict to the players lists
-        v_players.append(v_tmp_stats)
-        h_players.append(h_tmp_stats)
+        v_players_stats.append(v_tmp_stats)
+        h_players_stats.append(h_tmp_stats)
 
         # increase the count by 1
         counter += 1
-    return v_players, h_players
+    return v_players_stats, h_players_stats
 
 
-def get_perc(v_players, h_players):
+def get_perc(v_players_stats, h_players_stats):
     """convert the stats of the player to percentages"""
     # init
     v_players_perc = []
@@ -83,9 +84,11 @@ def get_perc(v_players, h_players):
         v_tmp_perc = {}
         h_tmp_perc = {}
 
-        v_stats = v_players[counter]
-        h_stats = h_players[counter]
+        # get the stats of player counter
+        v_stats = v_players_stats[counter]
+        h_stats = h_players_stats[counter]
 
+        # populate the v_tmp_perc dictionary
         v_tmp_perc['1B'] = round(float(v_stats['1B'])/v_stats['PA'], 3)
         h_tmp_perc['1B'] = round(float(h_stats['1B'])/h_stats['PA'], 3)
         v_tmp_perc['2B'] = round(float(v_stats['2B'])/v_stats['PA'], 3)
@@ -101,8 +104,56 @@ def get_perc(v_players, h_players):
         v_tmp_perc['O'] = round(float(v_stats['O'])/v_stats['PA'], 3)
         h_tmp_perc['O'] = round(float(h_stats['O'])/h_stats['PA'], 3)
 
+        # add the tmp dict full of player stats in percentage form to a list
         v_players_perc.append(v_tmp_perc)
         h_players_perc.append(h_tmp_perc)
 
+        # increment a counter variable by 1
         counter += 1
     return v_players_perc, h_players_perc
+
+
+def get_event(v_players_perc, h_players_perc, batter, team):
+    """Returns the event that is selected randomly, according to prior situations"""
+    # gets the stats for a certain batter
+    # if the desired batter is on visiting team
+    if team == 0:
+        # get the dict from the batterth element of the visiting player list
+        stats = v_players_perc[batter]
+    # if the desired batter is on home team
+    else:
+        # get the dict from the batterth element of the home player list
+        stats = h_players_perc[batter]
+
+    # set the thresholds for each event
+    b1 = stats['1B'] * 1000
+    b2 = (stats['2B'] * 1000) + b1
+    b3 = (stats['3B'] * 1000) + b2
+    hr = (stats['HR'] * 1000) + b3
+    so = (stats['SO'] * 1000) + hr
+    bb = (stats['BB'] * 1000) + so
+    o = (stats['O'] * 1000) + bb
+    # print(b1, b2, b3, hr, so, bb, o, b1+b2+b3+hr+so+bb+o)
+
+    # generate the random number that determines the event that is simulated
+    num = random.randint(1, 1001)
+
+    # figure out what event should be simulated
+    if num <= b1:
+        return '1B'
+    if b1 < num <= b2:
+        return '2B'
+    if b2 < num <= b3:
+        return '3B'
+    if b3 < num <= hr:
+        return 'HR'
+    if hr < num <= so:
+        return 'SO'
+    if so < num <= bb:
+        return 'BB'
+    if bb < num <= o:
+        return 'O'
+
+tmp1, tmp2 = get_player_stats(_v_player_list, _h_player_list)
+tmp1, tmp2 = get_perc(tmp1, tmp2)
+print get_event(tmp1, tmp2, 3, 0)
