@@ -11,7 +11,8 @@ for team in contents:
         with open(path + team, "rb") as f:
             reader = csv.reader(f)
             for row in reader:
-                team_lst.append(row)
+                if row[6] != 'NP':
+                    team_lst.append(row)
             master_lst.append(team_lst)
             team_lst = []
 
