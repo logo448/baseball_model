@@ -1,6 +1,5 @@
 import csv
-import re
-import pickle
+import re=
 
 
 with open("C:/Users/Logan/Documents/Baseball/2014eve/master.csv", "rb") as f:
@@ -71,3 +70,45 @@ for i in data:
                         event_times["D"][tmp[0]]["data"].append(tmp[2])
                     else:
                         event_times["D"][tmp[0]]["data"].append('x'+tmp[2])
+
+    if triple.search(i) is not None:
+        if advance_info.search(i) is not None:
+            tmp = advance_info.split(i)[1]
+            if multiple_data.search(tmp) is not None:
+                tmp2 = multiple_data.split(tmp)
+                for i2 in tmp2:
+                    if i2[0] != 'B':
+                        event_times["T"][i2[0]]["times"] += 1
+                        if i2[1] != 'X':
+                            event_times["T"][i2[0]]["data"].append(i2[2])
+                        else:
+                            event_times["T"][i2[0]]["data"].append('x'+i2[2])
+            else:
+                if tmp[0] != 'B':
+                    event_times["T"][tmp[0]]["times"] += 1
+                    if tmp[1] != 'X':
+                        event_times["T"][tmp[0]]["data"].append(tmp[2])
+                    else:
+                        event_times["T"][tmp[0]]["data"].append('x'+tmp[2])
+
+    if strikeout.search(i) is not None:
+        if advance_info.search(i) is not None:
+            tmp = advance_info.split(i)[1]
+            if multiple_data.search(tmp) is not None:
+                tmp2 = multiple_data.split(tmp)
+                for i2 in tmp2:
+                    if i2[0] != 'B':
+                        event_times["K"][i2[0]]["times"] += 1
+                        if i2[1] != 'X':
+                            event_times["K"][i2[0]]["data"].append(i2[2])
+                        else:
+                            event_times["K"][i2[0]]["data"].append('x'+i2[2])
+            else:
+                if tmp[0] != 'B':
+                    event_times["K"][tmp[0]]["times"] += 1
+                    if tmp[1] != 'X':
+                        event_times["K"][tmp[0]]["data"].append(tmp[2])
+                    else:
+                        event_times["K"][tmp[0]]["data"].append('x'+tmp[2])
+        else:
+            event_times["K"]["total"] += 1
