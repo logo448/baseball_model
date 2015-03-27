@@ -1,0 +1,25 @@
+Key:
+Irrelevant for base running model; bx on left side
+Minimal Importance for base running model; m on left side
+Complete; c on right side
+In progress; p on right side
+(); group
+*; note
+
+Events:
+Single c
+Double c
+Triple c
+bx Home Run
+(m Ball
+m Strike)*1
+bx Walk
+Strikeout
+Stolen Base
+bx Foul Ball
+m Balk
+Wild Pitch
+Out
+bx Caught Foul
+
+1: For sake of base running model they are same thing
