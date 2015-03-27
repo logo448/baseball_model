@@ -11,15 +11,21 @@ Single c
 Double c
 Triple c
 bx Home Run
-(m Ball
-m Strike)*1
+(bx Ball
+bx Strike)*1
 bx Walk
-Strikeout
-Stolen Base
+bx Strikeout
+Stolen Base c
 bx Foul Ball
 m Balk
-Wild Pitch
-Out
+m Wild Pitch
+Out c
 bx Caught Foul
 
 1: For sake of base running model they are same thing
+
+.074 probability of an attempt to steal 2-.728 success rate
+.017 probability of an attempt to steal 3-.765 success rate
+.133 probability runner on 1 advances to 2 on out
+.456 probability runner on 2 advances to 3 on out
+.557 probability runner on 3 advances to H on out
