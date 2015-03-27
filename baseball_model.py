@@ -1,9 +1,19 @@
 import MySQLdb
 import random
+import pickle
 
 # setup global variables and objects
 _db = MySQLdb.connect("localhost", "root", "Logamund 448", "lahman")
 _cursor = _db.cursor()
+_outs = 0
+_inning = 0
+_top_or_bottom = 0
+_bases = {"1": False, "2": False, "3": False}
+_v_score = 0
+_h_score = 0
+# import the BcE advancement data
+with open("C://Users/Logan/Documents/Baseball/baseball_model/data_struct.p", "rb") as f:
+    bce_data = pickle.load(f)
 
 # user input section
 _v_player_list = ["Yasiel Puig", "Justin Turner", "Hanley Ramirez",
