@@ -1,5 +1,6 @@
 import csv
 import re
+import pickle
 
 
 with open("C:/Users/Logan/Documents/Baseball/2014eve/master.csv", "rb") as f:
@@ -20,13 +21,9 @@ multiple_data = re.compile(";")
 
 regex_list = (single, double, triple, strikeout, out)
 
-event_times = {"S": {"1": {"times": 0, "data": []}, "2": {"times": 0, "data": []}, "3": {"times": 0, "data": []}},
-               "D": {"1": {"times": 0, "data": []}, "2": {"times": 0, "data": []}, "3": {"times": 0, "data": []}},
-               "T": {"1": {"times": 0, "data": []}, "2": {"times": 0, "data": []}, "3": {"times": 0, "data": []}},
-               "K": {"total": 0, "1": {"times": 0, "data": []}, "2": {"times": 0, "data": []}, "3": {"times": 0, "data": []}},
-               "O": {"total": 0, "1": {"times": 0, "data": []}, "2": {"times": 0, "data": []}, "3": {"times": 0, "data": []}},
-               "S2": {"1": {"times": 0, "data": []}, "2": {"times": 0, "data": []}, "3": {"times": 0, "data": []}},
-               "S3": {"1": {"times": 0, "data": []}, "2": {"times": 0, "data": []}, "3": {"times": 0, "data": []}}}
+bce_data = {"S": {"1": {"times": 0, "data": []}, "2": {"times": 0, "data": []}, "3": {"times": 0, "data": []}},
+            "D": {"1": {"times": 0, "data": []}, "2": {"times": 0, "data": []}, "3": {"times": 0, "data": []}},
+            "T": {"1": {"times": 0, "data": []}, "2": {"times": 0, "data": []}, "3": {"times": 0, "data": []}}}
 
 
 def search(mode):
@@ -59,32 +56,36 @@ def search(mode):
                         if runner[0] != "B":
                             # increment the variable in the event data structure that keeps track of all the times their
                             # was a runner on _ base
-                            event_times[mode][runner[0]]["times"] += 1
+                            bce_data[mode][runner[0]]["times"] += 1
                             # make sure the runner didn't get out
                             if runner[1] != "X":
                                 # add the base the runner reached to the event data structure
-                                event_times[mode][runner[0]]["data"].append(runner[2])
+                                bce_data[mode][runner[0]]["data"].append(runner[2])
                             # runner got out
                             else:
                                 # add the out to the data structure
-                                event_times[mode][runner[0]]["data"].append('x'+runner[2])
+                                bce_data[mode][runner[0]]["data"].append('x'+runner[2])
                 # no data for multiple runners
                 else:
                     # make sure the runner isn't the batter
                     if split[0] != "B":
                         # increment the variable in the event data structure that keeps track of all the times their
                         # was a runner on _ base
-                        event_times[mode][split[0]]["times"] += 1
+                        bce_data[mode][split[0]]["times"] += 1
                         # make sure the runner didn't get out
                         if split[1] != "X":
                             # add the base the runner reached to the event data structure
-                            event_times[mode][split[0]]["data"].append(split[2])
+                            bce_data[mode][split[0]]["data"].append(split[2])
                         # runner got out
                         else:
                             # add the out to the data structure
-                            event_times[mode][split[0]]["data"].append('x' + split[2])
+                            bce_data[mode][split[0]]["data"].append('x' + split[2])
 
-# TESTING
+# populate data structure
 search("S")
 search("D")
 search("T")
+
+# output data structure
+with open("C://Users/Logan/Documents/Baseball/baseball_model/data_struct.p", "wb") as f:
+    pickle.dump(bce_data, f)
