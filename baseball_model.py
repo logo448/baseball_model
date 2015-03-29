@@ -8,9 +8,9 @@ _cursor = _db.cursor()
 _outs = 0
 _inning = 0
 _top_or_bottom = 0
-_bases = {"1": False, "2": False, "3": False}
 _v_score = 0
 _h_score = 0
+_bases = {"1": False, "2": False, "3": False}
 # import the BcE advancement data
 with open("C://Users/Logan/Documents/Baseball/baseball_model/data_struct.p", "rb") as f:
     bce_data = pickle.load(f)
@@ -166,6 +166,43 @@ def get_event(v_players_perc, h_players_perc, batter, team):
     else:
         get_event(v_players_perc, h_players_perc, batter, team)
 
-tmp1, tmp2 = get_player_stats(_v_player_list, _h_player_list)
-tmp1, tmp2 = get_perc(tmp1, tmp2)
-print get_event(tmp1, tmp2, 3, 0)
+
+def walk():
+    """Function that readjusts the bases in the occurrence of a walk"""
+    # allow access to global variables in this function
+    global _bases
+    global _v_score
+    global _h_score
+    # list created to keep track of which bases need to be set to occupied
+    set_true = ["1"]
+
+    # loop through all the bases
+    for base in _bases.keys():
+        # if the base is occupied
+        if _bases[base]:
+            # if the base is first base
+            if base == "1":
+                # add second base to the occupied list
+                set_true.append("2")
+            # if the base behind it and first base are occupied. Needed because of force movement principle of baseball
+            elif _bases[str(int(base) - 1)] and _bases["1"]:
+                # set the base in question to unoccupied
+                _bases[base] = False
+                # if the next base isn't home plate
+                if int(base) + 1 != 4:
+                    # add the next base to the occupied bases list
+                    set_true.append(str(int(base) + 1))
+                # next base is home plate
+                else:
+                    # if visiting team on offense
+                    if _top_or_bottom == 0:
+                        # increase the visiting teams score
+                        _v_score += 1
+                    # home team on offense
+                    else:
+                        # increase home teams score by 1
+                        _h_score += 1
+    # loop through list of newly occupied bases
+    for base in set_true:
+        # set base to occupied
+        _bases[base] = True
