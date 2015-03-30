@@ -167,6 +167,22 @@ def get_event(v_players_perc, h_players_perc, batter, team):
         get_event(v_players_perc, h_players_perc, batter, team)
 
 
+def increment_score():
+    """Increments the score of the team on offense"""
+    # allow access to global variables in this function
+    global _v_score
+    global _h_score
+
+    # if visiting team is on offense
+    if _top_or_bottom == 0:
+        # increase the visiting teams score
+        _v_score += 1
+    # home team on offense
+    else:
+        # increase home teams score by 1
+        _h_score += 1
+
+
 def walk():
     """Function that readjusts the bases in the occurrence of a walk"""
     # allow access to global variables in this function
@@ -194,14 +210,7 @@ def walk():
                     set_true.append(str(int(base) + 1))
                 # next base is home plate
                 else:
-                    # if visiting team on offense
-                    if _top_or_bottom == 0:
-                        # increase the visiting teams score
-                        _v_score += 1
-                    # home team on offense
-                    else:
-                        # increase home teams score by 1
-                        _h_score += 1
+                    increment_score()
     # loop through list of newly occupied bases
     for base in set_true:
         # set base to occupied
@@ -215,26 +224,13 @@ def homerun():
     global _v_score
     global _h_score
 
-    # add a point to offensive teams score
-    # if visiting team is on offense
-    if _top_or_bottom == 0:
-        # increase the visiting teams score
-        _v_score += 1
-    # home team on offense
-    else:
-        # increase home teams score by 1
-        _h_score += 1
+    # add one point for the batter scoring
+    increment_score()
+
     # loop through the bases
     for base in _bases:
         # if base is occupied
         if _bases[base]:
             # set base to unoccupied
             _bases[base] = False
-            # if visiting team on offense
-            if _top_or_bottom == 0:
-                # increase the visiting teams score
-                _v_score += 1
-            # home team on offense
-            else:
-                # increase home teams score by 1
-                _h_score += 1
+            increment_score()
