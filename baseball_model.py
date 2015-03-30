@@ -206,3 +206,35 @@ def walk():
     for base in set_true:
         # set base to occupied
         _bases[base] = True
+
+
+def homerun():
+    """Adjusts bases and score if a homerun is hit"""
+    # allow access to global variables in this function
+    global _bases
+    global _v_score
+    global _h_score
+
+    # add a point to offensive teams score
+    # if visiting team is on offense
+    if _top_or_bottom == 0:
+        # increase the visiting teams score
+        _v_score += 1
+    # home team on offense
+    else:
+        # increase home teams score by 1
+        _h_score += 1
+    # loop through the bases
+    for base in _bases:
+        # if base is occupied
+        if _bases[base]:
+            # set base to unoccupied
+            _bases[base] = False
+            # if visiting team on offense
+            if _top_or_bottom == 0:
+                # increase the visiting teams score
+                _v_score += 1
+            # home team on offense
+            else:
+                # increase home teams score by 1
+                _h_score += 1
