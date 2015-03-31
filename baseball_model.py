@@ -1,3 +1,4 @@
+# 123 234 142 143
 import MySQLdb
 import random
 import pickle
@@ -146,7 +147,7 @@ def get_event(v_players_perc, h_players_perc, batter, team):
     # print(b1, b2, b3, hr, so, bb, o, b1+b2+b3+hr+so+bb+o)
 
     # generate the random number that determines the event that is simulated
-    num = random.randint(1, 1001)
+    num = random.randint(1, 1000)
 
     # figure out what event should be simulated
     if num <= b1:
@@ -233,4 +234,53 @@ def homerun():
         if _bases[base]:
             # set base to unoccupied
             _bases[base] = False
+            increment_score()
+
+
+def strikeout():
+    """Adjusts the game variables if a strikeout occurs"""
+    global _outs
+    _outs += 1
+
+
+def out():
+    """Readjusts game variables if an out occurs"""
+    # allows access to global variables in this function
+    global _bases
+    global _v_score
+    global _h_score
+    global _outs
+
+    # increments outs by one
+    _outs += 1
+
+    # if one is occupied and tow isn't
+    if _bases["1"] and not _bases["2"]:
+        # randomly select if runner advances or not
+        # random number
+        rand = random.randint(1, 1000)
+        # if random number falls in the right range. Happens 13 percent of the time
+        if rand <= 133:
+            # move runner from first to second
+            _bases["1"] = False
+            _bases["2"] = True
+    # if first if above fails and second is occupied but 3 isn't
+    elif _bases["2"] and not _bases["3"]:
+        # randomly select if runner advances or not
+        # random number
+        rand = random.randint(1, 1000)
+        # if random number falls in the right range. Happens 46 percent of the time
+        if rand <= 456:
+            # move runner from second to third
+            _bases["2"] = False
+            _bases["3"] = True
+    # if first two ifs fail and guy on 3
+    elif _bases["3"]:
+        # randomly select if runner advances or not
+        # random number
+        rand = random.randint(1, 1000)
+        # if random number falls in the right range. Happens 56 percent of the time
+        if rand <= 557:
+            # move runner to home/increment score and remove runner on 3
+            _bases["3"] = False
             increment_score()
