@@ -254,6 +254,7 @@ def out():
     # increments outs by one
     _outs += 1
 
+    # check to see if runners will advance
     # if one is occupied and tow isn't
     if _bases["1"] and not _bases["2"]:
         # randomly select if runner advances or not
@@ -284,3 +285,39 @@ def out():
             # move runner to home/increment score and remove runner on 3
             _bases["3"] = False
             increment_score()
+
+
+def get_sb():
+    """check if a runner is going to steal a base, if so is he successful?"""
+    # allow access to these global variables in this function
+    global _bases
+    global _outs
+
+    # if runner on first but not on second
+    if _bases["1"] and not _bases["2"]:
+        # randomly see if runner will attempt to steal 2
+        if random.randint(1, 1000) <= 74:
+            # set first to unoccupied, either way success or fail their is no one on first
+            _bases["1"] = False
+            # randomly see if runner made it safely
+            if random.randint(1, 1000) <= 728:
+                # set second to occupied
+                _bases["2"] = True
+            # runner didn't make it to second
+            else:
+                # add an out
+                _outs += 1
+    # if their is a runner on second but not third
+    elif _bases["2"] and not _bases["3"]:
+        # randomly see if runner will attempt to steal 2
+        if random.randint(1, 1000) <= 17:
+            # set 2 to unoccupied, either way success or fail their is no one on second anymore
+            _bases["2"] = False
+            # randomly see if runner made it safely
+            if random.randint(1, 1000) <= 765:
+                # set third to occupied
+                _bases["3"] = True
+            # runner got caught
+            else:
+                # add an out
+                _outs += 1
