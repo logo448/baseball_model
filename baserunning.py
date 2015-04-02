@@ -21,17 +21,17 @@ multiple_data = re.compile(";")
 
 regex_list = (single, double, triple, strikeout, out)
 
-bce_data = {"S": {"1": {"times": 0, "data": []}, "2": {"times": 0, "data": []}, "3": {"times": 0, "data": []}},
-            "D": {"1": {"times": 0, "data": []}, "2": {"times": 0, "data": []}, "3": {"times": 0, "data": []}},
-            "T": {"1": {"times": 0, "data": []}, "2": {"times": 0, "data": []}, "3": {"times": 0, "data": []}}}
+bce_data = {"1": {"1": {"times": 0, "data": []}, "2": {"times": 0, "data": []}, "3": {"times": 0, "data": []}},
+            "2": {"1": {"times": 0, "data": []}, "2": {"times": 0, "data": []}, "3": {"times": 0, "data": []}},
+            "3": {"1": {"times": 0, "data": []}, "2": {"times": 0, "data": []}, "3": {"times": 0, "data": []}}}
 
 
 def search(mode):
-    if mode == "S":
+    if mode == "1":
         regex_list_index = 0
-    elif mode == "D":
+    elif mode == "2":
         regex_list_index = 1
-    elif mode == "T":
+    elif mode == "3":
         regex_list_index = 2
     else:
         return False
@@ -82,9 +82,9 @@ def search(mode):
                             bce_data[mode][split[0]]["data"].append('x' + split[2])
 
 # populate data structure
-search("S")
-search("D")
-search("T")
+search("1")
+search("2")
+search("3")
 
 # output data structure
 with open("C://Users/Logan/Documents/Baseball/baseball_model/data_struct.p", "wb") as f:
