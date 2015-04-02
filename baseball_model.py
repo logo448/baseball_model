@@ -468,37 +468,29 @@ def hit(e):
             # lead runner
             while True:
                 rand = random.randint(1, 10000)
+                _bases[runner_bases[0]] = False
                 # attempting to go to 2
                 if rand <= attempt_2:
                     rand = random.randint(1, 10000)
-                    print 'l1 2'
                     if rand <= success_2:
-                        _bases[runner_bases[0]] = False
                         _bases["2"] = True
                     else:
-                        _bases[runner_bases[0]] = False
                         _outs += 1
                     break
                 # attempting to go to 3
                 elif attempt_2 < rand <= attempt_3 + attempt_2:
                     rand = random.randint(1, 10000)
-                    print 'l1 3'
                     if rand <= success_3:
-                        _bases[runner_bases[0]] = False
                         _bases["3"] = True
                     else:
-                        _bases[runner_bases[0]] = False
                         _outs += 1
                     break
                 # attempting to score
                 elif attempt_3 < rand <= attempt_h + attempt_3:
-                    print 'l1 h'
                     rand = random.randint(1, 10000)
                     if rand <= success_h:
-                        _bases[runner_bases[0]] = False
                         increment_score()
                     else:
-                        _bases[runner_bases[0]] = False
                         _outs += 1
                     break
                 else:
@@ -507,45 +499,35 @@ def hit(e):
             # last runner
             while True:
                 rand = random.randint(1, 10000)
+                _bases[runner_bases[1]] = False
                 # attempting to go to 2
                 if rand <= attempt1_2:
                     rand = random.randint(1, 10000)
-                    print '21'
                     if rand <= success1_2:
                         if not _bases["2"]:
-                            _bases[runner_bases[1]] = False
                             _bases["2"] = True
                         else:
-                            _bases[runner_bases[1]] = False
                             _bases["3"] = True
                     else:
-                        _bases[runner_bases[1]] = False
                         _outs += 1
                     break
                 # attempting to go to 3
                 elif attempt1_2 < rand <= attempt1_3 + attempt1_2:
                     rand = random.randint(1, 10000)
-                    print '31'
                     if rand <= success1_3:
                         if not _bases["3"]:
-                            _bases[runner_bases[1]] = False
                             _bases["3"] = True
                         else:
-                            _bases[runner_bases[1]] = False
                             _bases["2"] = True
                     else:
-                        _bases[runner_bases[1]] = False
                         _outs += 1
                     break
                 # attempting to score
                 elif attempt1_3 < rand <= attempt1_h + attempt1_3:
                     rand = random.randint(1, 10000)
-                    print 'h1'
                     if rand <= success1_h:
-                        _bases[runner_bases[1]] = False
                         increment_score()
                     else:
-                        _bases[runner_bases[1]] = False
                         _outs += 1
                     break
                 else:
@@ -571,26 +553,21 @@ def hit(e):
             # lead runner
             while True:
                 rand = random.randint(1, 10000)
+                _bases[runner_bases[0]] = False
                 # attempting to go to 3
                 if rand <= attempt_3:
                     rand = random.randint(1, 10000)
-                    print 'l1 3'
                     if rand <= success_3:
-                        _bases[runner_bases[0]] = False
                         _bases["3"] = True
                     else:
-                        _bases[runner_bases[0]] = False
                         _outs += 1
                     break
                 # attempting to score
                 elif attempt_3 < rand <= attempt_h + attempt_3:
-                    print 'l1 h'
                     rand = random.randint(1, 10000)
                     if rand <= success_h:
-                        _bases[runner_bases[0]] = False
                         increment_score()
                     else:
-                        _bases[runner_bases[0]] = False
                         _outs += 1
                     break
                 else:
@@ -599,31 +576,25 @@ def hit(e):
             # last runner
             while True:
                 rand = random.randint(1, 10000)
+                _bases[runner_bases[1]] = False
                 # attempting to go to 3
                 if rand <= attempt1_3:
                     rand = random.randint(1, 10000)
-                    print '31'
                     if rand <= success1_3:
                         if not _bases["3"]:
-                            _bases[runner_bases[1]] = False
                             _bases["3"] = True
                         else:
-                            _bases[runner_bases[1]] = False
                             increment_score()
                     else:
-                        _bases[runner_bases[1]] = False
                         _outs += 1
                     break
 
                 # attempting to score
                 elif attempt1_3 < rand <= attempt1_h + attempt1_3:
                     rand = random.randint(1, 10000)
-                    print 'h1'
                     if rand <= success1_h:
-                        _bases[runner_bases[1]] = False
                         increment_score()
                     else:
-                        _bases[runner_bases[1]] = False
                         _outs += 1
                     break
                 else:
@@ -639,21 +610,19 @@ def hit(e):
             success1_h = round(float(data1["H"]) / (data1["H"] + data1["xH"]), 4) * 10000
 
             # lead runner
+            _bases[runner_bases[0]] = False
             rand = random.randint(1, 10000)
             if rand <= success_h:
-                _bases[runner_bases[0]] = False
                 increment_score()
             else:
-                _bases[runner_bases[0]] = False
                 _outs += 1
 
             # last runner
+            _bases[runner_bases[1]] = False
             rand = random.randint(1, 10000)
             if rand <= success1_h:
-                _bases[runner_bases[1]] = False
                 increment_score()
             else:
-                _bases[runner_bases[1]] = False
                 _outs += 1
 
             _bases["3"] = True
@@ -791,7 +760,6 @@ def hit(e):
                 _bases["1"] = False
                 # attempting to go to 3
                 if rand <= attempt2_3:
-                    print 'la3'
                     rand = random.randint(1, 10000)
                     if rand <= success2_3:
                         if not _bases["3"]:
@@ -803,7 +771,6 @@ def hit(e):
                     break
                 # attempting to score
                 elif attempt2_3 < rand <= attempt2_h + attempt2_3:
-                    print 'lah'
                     rand = random.randint(1, 10000)
                     if rand <= success2_h:
                         increment_score()
@@ -847,12 +814,3 @@ def hit(e):
             else:
                 _outs += 1
             _bases["3"] = True
-
-
-_bases["1"] = True
-_bases["2"] = True
-_bases["3"] = True
-hit("3")
-print _bases
-print _outs
-print _v_score
