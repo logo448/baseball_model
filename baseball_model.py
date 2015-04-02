@@ -625,10 +625,30 @@ def hit(e):
                     continue
             _bases["2"] = True
 
+        # triple
+        if e == "3":
+            # get the probabilities for one runner
+            success_h = round(float(data["H"]) / (data["H"] + data["xH"]), 4) * 10000
 
-_bases["1"] = True
-_bases["2"] = True
-hit("1")
-print _bases
-print _outs
-print _v_score
+            # get the probabilities for the other runner
+            success1_h = round(float(data1["H"]) / (data["H"] + data["xH"]), 4) * 10000
+
+            # lead runner
+            rand = random.randint(1, 10000)
+            if rand <= success_h:
+                _bases[runner_bases[0]] = False
+                increment_score()
+            else:
+                _bases[runner_bases[0]] = False
+                _outs += 1
+
+            # last runner
+            rand = random.randint(1, 10000)
+            if rand <= success1_h:
+                _bases[runner_bases[1]] = False
+                increment_score()
+            else:
+                _bases[runner_bases[1]] = False
+                _outs += 1
+
+            _bases["3"] = True
