@@ -2,6 +2,7 @@
 import MySQLdb
 import random
 import pickle
+from collections import Counter
 
 # setup global variables and objects
 _db = MySQLdb.connect("localhost", "root", "Logamund 448", "lahman")
@@ -321,3 +322,110 @@ def get_sb():
             else:
                 # add an out
                 _outs += 1
+
+
+def hit(e):
+    global _bases
+    global _v_score
+    global _h_score
+    global _outs
+
+    number_runners = 0
+    runner_bases = []
+    for base in _bases.keys():
+        if _bases[base]:
+            number_runners += 1
+            runner_bases.append(base)
+
+    if number_runners == 0:
+        if e == "1":
+            _bases["1"] = True
+        elif e == "2":
+            _bases["2"] = True
+        elif e == "3":
+            _bases["3"] = True
+
+    elif number_runners == 1:
+        data = Counter(bce_data[e][runner_bases[0]]["data"])
+        if e == "1":
+            attempt_2 = round(float(data["2"] + data["x2"]) / bce_data[e][runner_bases[0]]["times"], 4) * 10000
+            attempt_3 = round(float(data["3"] + data["x3"]) / bce_data[e][runner_bases[0]]["times"], 4) * 10000
+            attempt_h = round(float(data["H"] + data["xH"]) / bce_data[e][runner_bases[0]]["times"], 4) * 10000
+            if runner_bases[0] != "3":
+                success_2 = round(float(data["2"]) / (data["2"] + data["x2"]), 4) * 10000
+            success_3 = round(float(data["3"]) / (data["3"] + data["x3"]), 4) * 10000
+            success_h = round(float(data["H"]) / (data["H"] + data["xH"]), 4) * 10000
+
+            rand = random.randint(1, 10000)
+            if rand <= attempt_2:
+                rand = random.randint(1, 10000)
+                if rand <= success_2:
+                    _bases[runner_bases[0]] = False
+                    _bases["2"] = True
+                else:
+                    _bases[runner_bases[0]] = False
+                    _outs += 1
+            elif attempt_2 < rand <= attempt_3 + attempt_2:
+                rand = random.randint(1, 10000)
+                if rand <= success_3:
+                    _bases[runner_bases[0]] = False
+                    _bases["3"] = True
+                else:
+                    _bases[runner_bases[0]] = False
+                    _outs += 1
+            elif attempt_3 < rand <= attempt_h + attempt_3:
+                rand = random.randint(1, 10000)
+                if rand <= success_h:
+                    _bases[runner_bases[0]] = False
+                    increment_score()
+                else:
+                    _bases[runner_bases[0]] = False
+                    _outs += 1
+            else:
+                hit(e)
+            _bases["1"] = True
+
+        elif e == "2":
+            attempt_3 = round(float(data["3"] + data["x3"]) / bce_data[e][runner_bases[0]]["times"], 4) * 10000
+            attempt_h = round(float(data["H"] + data["xH"]) / bce_data[e][runner_bases[0]]["times"], 4) * 10000
+            if runner_bases[0] != "3":
+                success_3 = round(float(data["3"]) / (data["3"] + data["x3"]), 4) * 10000
+            success_h = round(float(data["H"]) / (data["H"] + data["xH"]), 4) * 10000
+
+            rand = random.randint(1, 10000)
+            if rand <= attempt_3:
+                rand = random.randint(1, 10000)
+                if rand <= success_3:
+                    _bases[runner_bases[0]] = False
+                    _bases["3"] = True
+                else:
+                    _bases[runner_bases[0]] = False
+                    _outs += 1
+            elif attempt_3 < rand <= attempt_h + attempt_3:
+                rand = random.randint(1, 10000)
+                if rand <= success_h:
+                    _bases[runner_bases[0]] = False
+                    increment_score()
+                else:
+                    _bases[runner_bases[0]] = False
+                    _outs += 1
+            else:
+                hit(e)
+            _bases["2"] = True
+
+        elif e == "3":
+            attempt_h = round(float(data["H"] + data["xH"]) / bce_data[e][runner_bases[0]]["times"], 4) * 10000
+            success_h = round(float(data["H"]) / (data["H"] + data["xH"]), 4) * 10000
+
+            rand = random.randint(1, 10000)
+            if rand <= attempt_h:
+                rand = random.randint(1, 10000)
+                if rand <= success_h:
+                    _bases[runner_bases[0]] = False
+                    increment_score()
+                else:
+                    _bases[runner_bases[0]] = False
+                    _outs += 1
+            else:
+                hit(e)
+            _bases["3"] = True
