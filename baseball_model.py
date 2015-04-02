@@ -325,36 +325,51 @@ def get_sb():
 
 
 def hit(e):
+    # allow access to global variables in this function
     global _bases
     global _v_score
     global _h_score
     global _outs
 
+    # variable to figure out home many runners are on base
     number_runners = 0
+    # list of where the runners are located
     runner_bases = []
+
+    # loop through each base
     for base in _bases.keys():
+        # if the base is occupied
         if _bases[base]:
+            # increase the number of runners by 1
             number_runners += 1
+            # add the base to the list of bases
             runner_bases.append(base)
+    # sort list of bases from greatest (3) to smallest (1)
     runner_bases.sort(reverse=True)
 
     # if there are no runners
     if number_runners == 0:
         # if single
         if e == "1":
+            # set first to occupied
             _bases["1"] = True
         # if double
         elif e == "2":
+            # set second to occupied
             _bases["2"] = True
         # if triple
         elif e == "3":
+            # set third to occupied
             _bases["3"] = True
 
     # one runner
     elif number_runners == 1:
+        # turn the runner advancement data into a counter object
         data = Counter(bce_data[e][runner_bases[0]]["data"])
+
         # single
         if e == "1":
+            # get the probabilities required for the first runner
             attempt_2 = round(float(data["2"] + data["x2"]) / bce_data[e][runner_bases[0]]["times"], 4) * 10000
             attempt_3 = round(float(data["3"] + data["x3"]) / bce_data[e][runner_bases[0]]["times"], 4) * 10000
             attempt_h = round(float(data["H"] + data["xH"]) / bce_data[e][runner_bases[0]]["times"], 4) * 10000
@@ -363,82 +378,122 @@ def hit(e):
             success_3 = round(float(data["3"]) / (data["3"] + data["x3"]), 4) * 10000
             success_h = round(float(data["H"]) / (data["H"] + data["xH"]), 4) * 10000
 
+            # infinite loop until all runners have been moved
             while True:
+                # set the base where the runner is located to unoccupied cuz runner is going to move
+                _bases[runner_bases[0]] = False
+
+                # generate random number to determine new runner position
                 rand = random.randint(1, 10000)
+                # random number correlates with the runner attempting to go to second base
                 if rand <= attempt_2:
+                    # generate random number to determine if the runner safely reaches second
                     rand = random.randint(1, 10000)
+                    # safe
                     if rand <= success_2:
-                        _bases[runner_bases[0]] = False
+                        # set second to occupied
                         _bases["2"] = True
+                    # out
                     else:
-                        _bases[runner_bases[0]] = False
+                        # add an out
                         _outs += 1
+                    # exit while because placement is complete
                     break
+                # random number correlates with the runner attempting to go to third base
                 elif attempt_2 < rand <= attempt_3 + attempt_2:
+                    # generate random number to determine if runner reaches 3 safely
                     rand = random.randint(1, 10000)
+                    # safe
                     if rand <= success_3:
-                        _bases[runner_bases[0]] = False
                         _bases["3"] = True
+                    # out
                     else:
-                        _bases[runner_bases[0]] = False
                         _outs += 1
+                    # exit while because placement is complete
                     break
+                # random number correlates with the runner attempting to go to score
                 elif attempt_3 < rand <= attempt_h + attempt_3:
+                    # generate random number to determine if runner scores safely
                     rand = random.randint(1, 10000)
+                    # safe
                     if rand <= success_h:
-                        _bases[runner_bases[0]] = False
                         increment_score()
+                    # out
                     else:
-                        _bases[runner_bases[0]] = False
                         _outs += 1
+                    # exit while because placement is complete
                     break
+                # runner placement not complete
                 else:
+                    # go through the loop again
                     continue
+            # set first base to occupied because a single was hit
             _bases["1"] = True
 
         # double
         elif e == "2":
+            # get the probabilities required for the first runner
             attempt_3 = round(float(data["3"] + data["x3"]) / bce_data[e][runner_bases[0]]["times"], 4) * 10000
             attempt_h = round(float(data["H"] + data["xH"]) / bce_data[e][runner_bases[0]]["times"], 4) * 10000
             if runner_bases[0] != "3":
                 success_3 = round(float(data["3"]) / (data["3"] + data["x3"]), 4) * 10000
             success_h = round(float(data["H"]) / (data["H"] + data["xH"]), 4) * 10000
 
+            # infinite loop until all runners have been moved
             while True:
+                # set the base where the runner is located to unoccupied cuz runner is going to move
+                _bases[runner_bases[0]] = False
+
+                # generate random number to determine new runner position
                 rand = random.randint(1, 10000)
+                # random number correlates with runner attempting to go to 3
                 if rand <= attempt_3:
+                    # generate random number to determine if runner reaches 3 safely
                     rand = random.randint(1, 10000)
+                    # safe
                     if rand <= success_3:
-                        _bases[runner_bases[0]] = False
                         _bases["3"] = True
+                    # out
                     else:
-                        _bases[runner_bases[0]] = False
                         _outs += 1
+                    # exit while loop because runner was moved
                     break
+                # random number correlates with runner trying to score
                 elif attempt_3 < rand <= attempt_h + attempt_3:
+                    # generate random number to determine if runner will score safely
                     rand = random.randint(1, 10000)
+                    # safe
                     if rand <= success_h:
-                        _bases[runner_bases[0]] = False
                         increment_score()
+                    # out
                     else:
-                        _bases[runner_bases[0]] = False
                         _outs += 1
+                    # exit while loop because the runner has moved
                     break
+                # runner movement not complete
                 else:
+                    # go through loop again
                     continue
+            # set second base to occupied because a double was hit
             _bases["2"] = True
+
         # triple
         elif e == "3":
+            # get the probabilities required for the first runner
             success_h = round(float(data["H"]) / (data["H"] + data["xH"]), 4) * 10000
 
-            rand = random.randint(1, 10000)
-            if rand <= success_h:
-                _bases[runner_bases[0]] = False
-                increment_score()
-            else:
-                _bases[runner_bases[0]] = False
-                _outs += 1
+            # set the base the runner occupied to unoccupied cuz runner is going to move
+            _bases[runner_bases[0]] = False
 
+            # generate random number to determine if runner scores safely
+            rand = random.randint(1, 10000)
+            # safe
+            if rand <= success_h:
+                increment_score()
+            # out
+            else:
+                _outs += 1
+            # set third base to occupied because a triple was hit.
             _bases["3"] = True
 
     # two runners
