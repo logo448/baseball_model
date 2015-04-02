@@ -349,6 +349,7 @@ def hit(e):
         # if triple
         elif e == "3":
             _bases["3"] = True
+
     # one runner
     elif number_runners == 1:
         data = Counter(bce_data[e][runner_bases[0]]["data"])
@@ -362,34 +363,39 @@ def hit(e):
             success_3 = round(float(data["3"]) / (data["3"] + data["x3"]), 4) * 10000
             success_h = round(float(data["H"]) / (data["H"] + data["xH"]), 4) * 10000
 
-            rand = random.randint(1, 10000)
-            if rand <= attempt_2:
+            while True:
                 rand = random.randint(1, 10000)
-                if rand <= success_2:
-                    _bases[runner_bases[0]] = False
-                    _bases["2"] = True
+                if rand <= attempt_2:
+                    rand = random.randint(1, 10000)
+                    if rand <= success_2:
+                        _bases[runner_bases[0]] = False
+                        _bases["2"] = True
+                    else:
+                        _bases[runner_bases[0]] = False
+                        _outs += 1
+                    break
+                elif attempt_2 < rand <= attempt_3 + attempt_2:
+                    rand = random.randint(1, 10000)
+                    if rand <= success_3:
+                        _bases[runner_bases[0]] = False
+                        _bases["3"] = True
+                    else:
+                        _bases[runner_bases[0]] = False
+                        _outs += 1
+                    break
+                elif attempt_3 < rand <= attempt_h + attempt_3:
+                    rand = random.randint(1, 10000)
+                    if rand <= success_h:
+                        _bases[runner_bases[0]] = False
+                        increment_score()
+                    else:
+                        _bases[runner_bases[0]] = False
+                        _outs += 1
+                    break
                 else:
-                    _bases[runner_bases[0]] = False
-                    _outs += 1
-            elif attempt_2 < rand <= attempt_3 + attempt_2:
-                rand = random.randint(1, 10000)
-                if rand <= success_3:
-                    _bases[runner_bases[0]] = False
-                    _bases["3"] = True
-                else:
-                    _bases[runner_bases[0]] = False
-                    _outs += 1
-            elif attempt_3 < rand <= attempt_h + attempt_3:
-                rand = random.randint(1, 10000)
-                if rand <= success_h:
-                    _bases[runner_bases[0]] = False
-                    increment_score()
-                else:
-                    _bases[runner_bases[0]] = False
-                    _outs += 1
-            else:
-                hit(e)
+                    continue
             _bases["1"] = True
+
         # double
         elif e == "2":
             attempt_3 = round(float(data["3"] + data["x3"]) / bce_data[e][runner_bases[0]]["times"], 4) * 10000
@@ -398,42 +404,41 @@ def hit(e):
                 success_3 = round(float(data["3"]) / (data["3"] + data["x3"]), 4) * 10000
             success_h = round(float(data["H"]) / (data["H"] + data["xH"]), 4) * 10000
 
-            rand = random.randint(1, 10000)
-            if rand <= attempt_3:
+            while True:
                 rand = random.randint(1, 10000)
-                if rand <= success_3:
-                    _bases[runner_bases[0]] = False
-                    _bases["3"] = True
+                if rand <= attempt_3:
+                    rand = random.randint(1, 10000)
+                    if rand <= success_3:
+                        _bases[runner_bases[0]] = False
+                        _bases["3"] = True
+                    else:
+                        _bases[runner_bases[0]] = False
+                        _outs += 1
+                    break
+                elif attempt_3 < rand <= attempt_h + attempt_3:
+                    rand = random.randint(1, 10000)
+                    if rand <= success_h:
+                        _bases[runner_bases[0]] = False
+                        increment_score()
+                    else:
+                        _bases[runner_bases[0]] = False
+                        _outs += 1
+                    break
                 else:
-                    _bases[runner_bases[0]] = False
-                    _outs += 1
-            elif attempt_3 < rand <= attempt_h + attempt_3:
-                rand = random.randint(1, 10000)
-                if rand <= success_h:
-                    _bases[runner_bases[0]] = False
-                    increment_score()
-                else:
-                    _bases[runner_bases[0]] = False
-                    _outs += 1
-            else:
-                hit(e)
+                    continue
             _bases["2"] = True
         # triple
         elif e == "3":
-            attempt_h = round(float(data["H"] + data["xH"]) / bce_data[e][runner_bases[0]]["times"], 4) * 10000
             success_h = round(float(data["H"]) / (data["H"] + data["xH"]), 4) * 10000
 
             rand = random.randint(1, 10000)
-            if rand <= attempt_h:
-                rand = random.randint(1, 10000)
-                if rand <= success_h:
-                    _bases[runner_bases[0]] = False
-                    increment_score()
-                else:
-                    _bases[runner_bases[0]] = False
-                    _outs += 1
+            if rand <= success_h:
+                _bases[runner_bases[0]] = False
+                increment_score()
             else:
-                hit(e)
+                _bases[runner_bases[0]] = False
+                _outs += 1
+
             _bases["3"] = True
 
     # two runners
