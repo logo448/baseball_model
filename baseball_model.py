@@ -498,11 +498,13 @@ def hit(e):
 
     # two runners
     elif number_runners == 2:
+        # turn the runner advancement data into counter objects for each runner
         data = Counter(bce_data[e][runner_bases[0]]["data"])
         data1 = Counter(bce_data[e][runner_bases[1]]["data"])
+
         # single
         if e == "1":
-            # get the probabilities for one runner
+            # get the probabilities for the lead runner
             attempt_2 = round(float(data["2"] + data["x2"]) / bce_data[e][runner_bases[0]]["times"], 4) * 10000
             attempt_3 = round(float(data["3"] + data["x3"]) / bce_data[e][runner_bases[0]]["times"], 4) * 10000
             attempt_h = round(float(data["H"] + data["xH"]) / bce_data[e][runner_bases[0]]["times"], 4) * 10000
@@ -522,31 +524,46 @@ def hit(e):
 
             # lead runner
             while True:
-                rand = random.randint(1, 10000)
+                # set the base where the lead runner is coming from to unoccupied cuz the runner is going to move
                 _bases[runner_bases[0]] = False
-                # attempting to go to 2
+                # generate random number to determine where lead runner is going
+                rand = random.randint(1, 10000)
+                # random number correlates to attempting to go to 2
                 if rand <= attempt_2:
+                    # generate random number to determine if runner reaches 2 safely
                     rand = random.randint(1, 10000)
+                    # safe
                     if rand <= success_2:
                         _bases["2"] = True
+                    # out
                     else:
                         _outs += 1
+                    # exit while loop because runner has been moved
                     break
+
                 # attempting to go to 3
                 elif attempt_2 < rand <= attempt_3 + attempt_2:
+                    # generate random number to determine if runner reaches 3 safely
                     rand = random.randint(1, 10000)
+                    # safe
                     if rand <= success_3:
                         _bases["3"] = True
+                    # out
                     else:
                         _outs += 1
+                    # exit while loop because runner has been moved
                     break
                 # attempting to score
                 elif attempt_3 < rand <= attempt_h + attempt_3:
+                    # generate random number to determine if runner scores safely
                     rand = random.randint(1, 10000)
+                    # safe
                     if rand <= success_h:
                         increment_score()
+                    # out
                     else:
                         _outs += 1
+                    # exit while loop because runner has been moved
                     break
                 else:
                     continue
@@ -557,41 +574,62 @@ def hit(e):
                 _bases[runner_bases[1]] = False
                 # attempting to go to 2
                 if rand <= attempt1_2:
+                    # generate random number to determine if runner reaches 2 safely
                     rand = random.randint(1, 10000)
+                    # safe
                     if rand <= success1_2:
+                        # no one on 2
                         if not _bases["2"]:
                             _bases["2"] = True
+                        # someone on 2
                         else:
+                            # readjust lead runner too 3
                             _bases["3"] = True
+                    # out
                     else:
                         _outs += 1
+                    # exit while loop because runner has been moved
                     break
                 # attempting to go to 3
                 elif attempt1_2 < rand <= attempt1_3 + attempt1_2:
+                    # generate random number to determine if runner reaches 3 safely
                     rand = random.randint(1, 10000)
+                    # safe
                     if rand <= success1_3:
+                        # no one on third
                         if not _bases["3"]:
                             _bases["3"] = True
+                        # someone on third
                         else:
+                            # readjust runner back to second
                             _bases["2"] = True
+                    # out
                     else:
                         _outs += 1
+                    # exit while loop because runner has been moved
                     break
                 # attempting to score
                 elif attempt1_3 < rand <= attempt1_h + attempt1_3:
+                    # generate random number to determine if runner scores safely
                     rand = random.randint(1, 10000)
+                    # safe
                     if rand <= success1_h:
                         increment_score()
+                    # break
                     else:
                         _outs += 1
+                    # exit while loop because runner has been moved
                     break
+                # runner movement failed
                 else:
+                    # retry
                     continue
+            # set first to occupied because a single was hit
             _bases["1"] = True
 
         # double
         if e == "2":
-            # get the probabilities for one runner
+            # get the probabilities for the lead runner
             attempt_3 = round(float(data["3"] + data["x3"]) / bce_data[e][runner_bases[0]]["times"], 4) * 10000
             attempt_h = round(float(data["H"] + data["xH"]) / bce_data[e][runner_bases[0]]["times"], 4) * 10000
             if runner_bases[0] != "3":
@@ -607,58 +645,87 @@ def hit(e):
 
             # lead runner
             while True:
-                rand = random.randint(1, 10000)
+                # set the base where the lead runner came from to unoccupied cuz runner has to move
                 _bases[runner_bases[0]] = False
-                # attempting to go to 3
+                # generate random number to determine where the runner ends up
+                rand = random.randint(1, 10000)
+                # random number correlates to attempting to go to 3
                 if rand <= attempt_3:
+                    # generate random number to determine if runner reaches 3 safely
                     rand = random.randint(1, 10000)
+                    # safe
                     if rand <= success_3:
                         _bases["3"] = True
+                    # out
                     else:
                         _outs += 1
+                    # exit while loop because runner has been moved
                     break
+
                 # attempting to score
                 elif attempt_3 < rand <= attempt_h + attempt_3:
+                    # generate random number to determine if runner scores safely
                     rand = random.randint(1, 10000)
+                    # safe
                     if rand <= success_h:
                         increment_score()
+                    # out
                     else:
                         _outs += 1
+                    # exit while loop because runner has been moved
                     break
+                # runner movement failed
                 else:
+                    # retry
                     continue
 
             # last runner
             while True:
-                rand = random.randint(1, 10000)
+                # set the base where the lead runner came from to unoccupied cuz runner has to move
                 _bases[runner_bases[1]] = False
+                # generate random number to determine where the runner ends up
+                rand = random.randint(1, 10000)
                 # attempting to go to 3
                 if rand <= attempt1_3:
+                    # generate random number to determine if runner reaches 3 safely
                     rand = random.randint(1, 10000)
+                    # safe
                     if rand <= success1_3:
+                        # no one on 3
                         if not _bases["3"]:
                             _bases["3"] = True
+                        # someone on 3
                         else:
+                            # readjust lead runner to home
                             increment_score()
+                    # out
                     else:
                         _outs += 1
+                    # exit while loop because runner has been moved
                     break
 
                 # attempting to score
                 elif attempt1_3 < rand <= attempt1_h + attempt1_3:
+                    # generate random number to determine if runner scores safely
                     rand = random.randint(1, 10000)
+                    # safe
                     if rand <= success1_h:
                         increment_score()
+                    # out
                     else:
                         _outs += 1
+                    # exit while loop because runner has been moved
                     break
+                # runner readjustment failed
                 else:
+                    # retry
                     continue
+            # set second base to occupied because a double was hit
             _bases["2"] = True
 
         # triple
         if e == "3":
-            # get the probabilities for one runner
+            # get the probabilities for the lead runner
             success_h = round(float(data["H"]) / (data["H"] + data["xH"]), 4) * 10000
 
             # get the probabilities for the other runner
@@ -666,21 +733,28 @@ def hit(e):
 
             # lead runner
             _bases[runner_bases[0]] = False
+            # generate random number to determine if runner reaches 2 safely
             rand = random.randint(1, 10000)
+            # safe
             if rand <= success_h:
                 increment_score()
+            # out
             else:
                 _outs += 1
 
             # last runner
             _bases[runner_bases[1]] = False
+            # generate random number to determine if runner reaches 2 safely
             rand = random.randint(1, 10000)
+            # safe
             if rand <= success1_h:
                 increment_score()
+            # out
             else:
                 _outs += 1
-
+            # set the third to occupied because a triple was hit
             _bases["3"] = True
+
     # three runners
     elif number_runners == 3:
         # data for runner on 3
