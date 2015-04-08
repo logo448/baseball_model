@@ -192,6 +192,17 @@ class BattingSim:
             # increase home teams score by 1
             self.h_score += 1
 
+    def increment_outs(self):
+        """Increment the number of outs safely"""
+        # if adding an out ends the inning
+        if self.outs == 2:
+            return False
+        # adding an out doesn't end inning
+        else:
+            # add one out
+            self.outs += 1
+            return True
+
     def walk(self):
         """Function that readjusts the bases in the occurrence of a walk"""
         # list created to keep track of which bases need to be set to occupied
@@ -236,12 +247,14 @@ class BattingSim:
   
     def strikeout(self):
         """Adjusts the game variables if a strikeout occurs"""
-        self.outs += 1
+        if not self.increment_outs():
+            return
 
     def out(self):
         """Readjusts game variables if an out occurs"""
         # increments outs by one
-        self.outs += 1
+        if not self.increment_outs():
+            return
 
         # check to see if runners will advance
         # if one is occupied and tow isn't
@@ -290,7 +303,8 @@ class BattingSim:
                 # runner didn't make it to second
                 else:
                     # add an out
-                    self.outs += 1
+                    if not self.increment_outs():
+                        return
         # if their is a runner on second but not third
         elif self.bases["2"] and not self.bases["3"]:
             # randomly see if runner will attempt to steal 2
@@ -304,7 +318,8 @@ class BattingSim:
                 # runner got caught
                 else:
                     # add an out
-                    self.outs += 1
+                    if not self.increment_outs():
+                        return
 
     def hit(self, e):
         """Adjust game variables based on the type of hit and the bases"""
@@ -376,7 +391,8 @@ class BattingSim:
                         # out
                         else:
                             # add an out
-                            self.outs += 1
+                            if not self.increment_outs():
+                                return
                         # exit while because placement is complete
                         break
                     # random number correlates with the runner attempting to go to third base
@@ -388,7 +404,8 @@ class BattingSim:
                             self.bases["3"] = True
                         # out
                         else:
-                            self.outs += 1
+                            if not self.increment_outs():
+                                return
                         # exit while because placement is complete
                         break
                     # random number correlates with the runner attempting to go to score
@@ -400,7 +417,8 @@ class BattingSim:
                             self.increment_score()
                         # out
                         else:
-                            self.outs += 1
+                            if not self.increment_outs():
+                                return
                         # exit while because placement is complete
                         break
                     # runner placement not complete
@@ -435,7 +453,8 @@ class BattingSim:
                             self.bases["3"] = True
                         # out
                         else:
-                            self.outs += 1
+                            if not self.increment_outs():
+                                return
                         # exit while loop because runner was moved
                         break
                     # random number correlates with runner trying to score
@@ -447,7 +466,8 @@ class BattingSim:
                             self.increment_score()
                         # out
                         else:
-                            self.outs += 1
+                            if not self.increment_outs():
+                                return
                         # exit while loop because the runner has moved
                         break
                     # runner movement not complete
@@ -472,7 +492,8 @@ class BattingSim:
                     self.increment_score()
                 # out
                 else:
-                    self.outs += 1
+                    if not self.increment_outs():
+                        return
                 # set third base to occupied because a triple was hit.
                 self.bases["3"] = True
 
@@ -517,7 +538,8 @@ class BattingSim:
                             self.bases["2"] = True
                         # out
                         else:
-                            self.outs += 1
+                            if not self.increment_outs():
+                                return
                         # exit while loop because runner has been moved
                         break
 
@@ -530,7 +552,8 @@ class BattingSim:
                             self.bases["3"] = True
                         # out
                         else:
-                            self.outs += 1
+                            if not self.increment_outs():
+                                return
                         # exit while loop because runner has been moved
                         break
                     # attempting to score
@@ -542,7 +565,8 @@ class BattingSim:
                             self.increment_score()
                         # out
                         else:
-                            self.outs += 1
+                            if not self.increment_outs():
+                                return
                         # exit while loop because runner has been moved
                         break
                     else:
@@ -567,7 +591,8 @@ class BattingSim:
                                 self.bases["3"] = True
                         # out
                         else:
-                            self.outs += 1
+                            if not self.increment_outs():
+                                return
                         # exit while loop because runner has been moved
                         break
                     # attempting to go to 3
@@ -585,7 +610,8 @@ class BattingSim:
                                 self.bases["2"] = True
                         # out
                         else:
-                            self.outs += 1
+                            if not self.increment_outs():
+                                return
                         # exit while loop because runner has been moved
                         break
                     # attempting to score
@@ -597,7 +623,8 @@ class BattingSim:
                             self.increment_score()
                         # break
                         else:
-                            self.outs += 1
+                            if not self.increment_outs():
+                                return
                         # exit while loop because runner has been moved
                         break
                     # runner movement failed
@@ -638,7 +665,8 @@ class BattingSim:
                             self.bases["3"] = True
                         # out
                         else:
-                            self.outs += 1
+                            if not self.increment_outs():
+                                return
                         # exit while loop because runner has been moved
                         break
 
@@ -651,7 +679,8 @@ class BattingSim:
                             self.increment_score()
                         # out
                         else:
-                            self.outs += 1
+                            if not self.increment_outs():
+                                return
                         # exit while loop because runner has been moved
                         break
                     # runner movement failed
@@ -680,7 +709,8 @@ class BattingSim:
                                 self.increment_score()
                         # out
                         else:
-                            self.outs += 1
+                            if not self.increment_outs():
+                                return
                         # exit while loop because runner has been moved
                         break
 
@@ -693,7 +723,8 @@ class BattingSim:
                             self.increment_score()
                         # out
                         else:
-                            self.outs += 1
+                            if not self.increment_outs():
+                                return
                         # exit while loop because runner has been moved
                         break
                     # runner readjustment failed
@@ -720,7 +751,8 @@ class BattingSim:
                     self.increment_score()
                 # out
                 else:
-                    self.outs += 1
+                    if not self.increment_outs():
+                        return
 
                 # last runner
                 self.bases[runner_bases[1]] = False
@@ -731,7 +763,8 @@ class BattingSim:
                     self.increment_score()
                 # out
                 else:
-                    self.outs += 1
+                    if not self.increment_outs():
+                        return
                 # set third to occupied because a triple was hit
                 self.bases["3"] = True
 
@@ -768,7 +801,8 @@ class BattingSim:
                 if rand <= success_h:
                     self.increment_score()
                 else:
-                    self.outs += 1
+                    if not self.increment_outs():
+                        return
 
                 # runner on 2
                 while True:
@@ -781,7 +815,8 @@ class BattingSim:
                         if rand <= success1_3:
                             self.bases["3"] = True
                         else:
-                            self.outs += 1
+                            if not self.increment_outs():
+                                return
                         break
 
                     # attempting to score
@@ -790,7 +825,8 @@ class BattingSim:
                         if rand <= success1_h:
                             self.increment_score()
                         else:
-                            self.outs += 1
+                            if not self.increment_outs():
+                                return
                         break
                     else:
                         continue
@@ -809,7 +845,8 @@ class BattingSim:
                             else:
                                 self.bases["3"] = True
                         else:
-                            self.outs += 1
+                            if not self.increment_outs():
+                                return
                         break
 
                     # attempting to go to 3
@@ -821,17 +858,18 @@ class BattingSim:
                             else:
                                 self.bases["2"] = True
                         else:
-                            self.outs += 1
+                            if not self.increment_outs():
+                                return
                         break
 
                     # attempting to score
                     elif attempt2_3 < rand <= attempt2_h + attempt2_3:
-                        print 'lah'
                         rand = random.randint(1, 10000)
                         if rand <= success2_h:
                             self.increment_score()
                         else:
-                            self.outs += 1
+                            if not self.increment_outs():
+                                return
                         break
                     else:
                         continue
@@ -856,7 +894,8 @@ class BattingSim:
                 if rand <= success_h:
                     self.increment_score()
                 else:
-                    self.outs += 1
+                    if not self.increment_outs():
+                        return
 
                 # runner on 2
                 # attempting to score
@@ -865,7 +904,8 @@ class BattingSim:
                 if rand <= success1_h:
                     self.increment_score()
                 else:
-                    self.outs += 1
+                    if not self.increment_outs():
+                        return
 
                 # runner on 1
                 while True:
@@ -880,7 +920,8 @@ class BattingSim:
                             else:
                                 self.bases["2"] = True
                         else:
-                            self.outs += 1
+                            if not self.increment_outs():
+                                return
                         break
 
                     # attempting to score
@@ -889,7 +930,8 @@ class BattingSim:
                         if rand <= success2_h:
                             self.increment_score()
                         else:
-                            self.outs += 1
+                            if not self.increment_outs():
+                                return
                         break
                     else:
                         continue
@@ -911,7 +953,8 @@ class BattingSim:
                 if rand <= success_h:
                     self.increment_score()
                 else:
-                    self.outs += 1
+                    if not self.increment_outs():
+                        return
 
                 # runner on 2
                 # attempting to score
@@ -920,7 +963,8 @@ class BattingSim:
                 if rand <= success1_h:
                     self.increment_score()
                 else:
-                    self.outs += 1
+                    if not self.increment_outs():
+                        return
 
                 # runner on 1
                 # attempting to score
@@ -929,5 +973,6 @@ class BattingSim:
                 if rand <= success2_h:
                     self.increment_score()
                 else:
-                    self.outs += 1
+                    if not self.increment_outs():
+                        return
                 self.bases["3"] = True
