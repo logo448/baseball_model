@@ -993,3 +993,22 @@ class BattingSim:
                     if not self.increment_outs():
                         return
                 self.bases["3"] = True
+
+    def adjust_game(self, e):
+        """Adjusts the game dependent on what event happened"""
+        if e == '1B':
+            self.hit('1')
+        elif e == '2B':
+            self.hit('2')
+        elif e == '3B':
+            self.hit('3')
+        elif e == 'HR':
+            self.homerun()
+        elif e == 'BB':
+            self.walk()
+        elif e == 'SO':
+            self.strikeout()
+        elif e == 'O':
+            self.out()
+        else:
+            raise Exception
