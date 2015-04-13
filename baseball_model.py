@@ -29,6 +29,7 @@ class BattingSim:
         self.v_score = 0
         self.h_score = 0
         self.bases = {"1": False, "2": False, "3": False}
+        self.game_over = False
         
         # setup mysql
         db = MySQLdb.connect("localhost", "root", "Logamund 448", "lahman")
@@ -196,12 +197,28 @@ class BattingSim:
         """Increment the number of outs safely"""
         # if adding an out ends the inning
         if self.outs == 2:
+            self.change_batting()
             return False
         # adding an out doesn't end inning
         else:
             # add one out
             self.outs += 1
             return True
+
+    def change_batting(self):
+        """Change the batting team"""
+        if self.top_or_bottom == 0:
+            self.top_or_bottom = 1
+        else:
+            self.change_inning()
+            self.top_or_bottom = 0
+
+    def change_inning(self):
+        """Change what inning the sim is in"""
+        if self.inning != 9:
+            self.inning += 1
+        else:
+            self.game_over = True
 
     def walk(self):
         """Function that readjusts the bases in the occurrence of a walk"""
