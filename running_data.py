@@ -21,9 +21,9 @@ multiple_data = re.compile(";")
 
 regex_list = (single, double, triple, strikeout, out)
 
-bce_data = {"1": {"1": {"times": 0, "data": []}, "2": {"times": 0, "data": []}, "3": {"times": 0, "data": []}},
-            "2": {"1": {"times": 0, "data": []}, "2": {"times": 0, "data": []}, "3": {"times": 0, "data": []}},
-            "3": {"1": {"times": 0, "data": []}, "2": {"times": 0, "data": []}, "3": {"times": 0, "data": []}}}
+running_data = {"1": {"1": {"times": 0, "data": []}, "2": {"times": 0, "data": []}, "3": {"times": 0, "data": []}},
+                "2": {"1": {"times": 0, "data": []}, "2": {"times": 0, "data": []}, "3": {"times": 0, "data": []}},
+                "3": {"1": {"times": 0, "data": []}, "2": {"times": 0, "data": []}, "3": {"times": 0, "data": []}}}
 
 
 def search(mode):
@@ -56,36 +56,35 @@ def search(mode):
                         if runner[0] != "B":
                             # increment the variable in the event data structure that keeps track of all the times their
                             # was a runner on _ base
-                            bce_data[mode][runner[0]]["times"] += 1
+                            running_data[mode][runner[0]]["times"] += 1
                             # make sure the runner didn't get out
                             if runner[1] != "X":
                                 # add the base the runner reached to the event data structure
-                                bce_data[mode][runner[0]]["data"].append(runner[2])
+                                running_data[mode][runner[0]]["data"].append(runner[2])
                             # runner got out
                             else:
                                 # add the out to the data structure
-                                bce_data[mode][runner[0]]["data"].append('x'+runner[2])
+                                running_data[mode][runner[0]]["data"].append('x'+runner[2])
                 # no data for multiple runners
                 else:
                     # make sure the runner isn't the batter
                     if split[0] != "B":
                         # increment the variable in the event data structure that keeps track of all the times their
                         # was a runner on _ base
-                        bce_data[mode][split[0]]["times"] += 1
+                        running_data[mode][split[0]]["times"] += 1
                         # make sure the runner didn't get out
                         if split[1] != "X":
                             # add the base the runner reached to the event data structure
-                            bce_data[mode][split[0]]["data"].append(split[2])
+                            running_data[mode][split[0]]["data"].append(split[2])
                         # runner got out
                         else:
                             # add the out to the data structure
-                            bce_data[mode][split[0]]["data"].append('x' + split[2])
+                            running_data[mode][split[0]]["data"].append('x' + split[2])
+
 
 # populate data structure
-search("1")
-search("2")
-search("3")
-
-# output data structure
-with open("C://Users/Logan/Documents/Baseball/baseball_model/data_struct.p", "wb") as f:
-    pickle.dump(bce_data, f)
+def run():
+    search("1")
+    search("2")
+    search("3")
+    return running_data
