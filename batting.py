@@ -1,7 +1,7 @@
 # 123 234 142 143
 import MySQLdb
 import random
-import pickle
+import running_data
 from collections import Counter
 
 # user input section
@@ -31,8 +31,7 @@ class BattingSim:
         self.h_wins = 0
 
         # import the BcE advancement data
-        with open("C://Users/Logan/Documents/Baseball/baseball_model/data_struct.p", "rb") as f:
-            self.runner_movement_data = pickle.load(f)
+        self.runner_movement_data = running_data.run()
 
         # setup mysql
         db = MySQLdb.connect("localhost", "root", "Logamund 448", "lahman")
