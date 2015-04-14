@@ -14,10 +14,6 @@ h_list = ["A.J. Pollock", "Aaron Hill", "Paul Goldschmidt",
 
 
 class BattingSim:
-    # import the BcE advancement data
-    with open("C://Users/Logan/Documents/Baseball/baseball_model/data_struct.p", "rb") as f:
-        _runner_movement_data = pickle.load(f)
-
     def __init__(self, v_players, h_players):
         # initialize game variables
         self.v_players = v_players
@@ -30,15 +26,32 @@ class BattingSim:
         self.h_score = 0
         self.bases = {"1": False, "2": False, "3": False}
         self.game_over = False
-        
+
+        self.v_wins = 0
+        self.h_wins = 0
+
+        # import the BcE advancement data
+        with open("C://Users/Logan/Documents/Baseball/baseball_model/data_struct.p", "rb") as f:
+            self.runner_movement_data = pickle.load(f)
+
         # setup mysql
         db = MySQLdb.connect("localhost", "root", "Logamund 448", "lahman")
         self.cursor = db.cursor()
-        
+
         # get the players stats
         v_stats, h_stats = self.get_player_stats()
         # convert player stats into percentage form
         self.v_percents, self.h_percents = self.get_perc(v_stats, h_stats)
+
+    def reset(self):
+        self.outs = 0
+        self.inning = 0
+        self.top_or_bottom = 0
+        self.batter = 0
+        self.v_score = 0
+        self.h_score = 0
+        self.bases = {"1": False, "2": False, "3": False}
+        self.game_over = False
 
     def get_player_stats(self):
         """Get the player stats"""
@@ -160,10 +173,10 @@ class BattingSim:
         o = (stats['O'] * 1000) + bb
         # print(b1, b2, b3, hr, so, bb, o, b1+b2+b3+hr+so+bb+o)
 
-        # generate the random number that determines the event that is simulated
-        num = random.randint(1, 1000)
-
         while True:
+            # generate the random number that determines the event that is simulated
+            num = random.randint(1, 1000)
+
             # figure out what event should be simulated
             if num <= b1:
                 return '1B'
@@ -197,6 +210,7 @@ class BattingSim:
         """Increment the number of outs safely"""
         # if adding an out ends the inning
         if self.outs == 2:
+            self.outs = 0
             self.change_batting()
             return False
         # adding an out doesn't end inning
@@ -210,8 +224,8 @@ class BattingSim:
         if self.top_or_bottom == 0:
             self.top_or_bottom = 1
         else:
-            self.change_inning()
             self.top_or_bottom = 0
+            self.change_inning()
 
     def change_inning(self):
         """Change what inning the sim is in"""
@@ -219,6 +233,13 @@ class BattingSim:
             self.inning += 1
         else:
             self.game_over = True
+
+    def increment_batter(self):
+        """Increments the batter safely"""
+        if self.batter != 8:
+            self.batter += 1
+        else:
+            self.batter = 0
 
     def walk(self):
         """Function that readjusts the bases in the occurrence of a walk"""
@@ -340,8 +361,6 @@ class BattingSim:
 
     def hit(self, e):
         """Adjust game variables based on the type of hit and the bases"""
-        # allow access to the runner movement data
-        global _runner_movement_data
 
         # variable to figure out home many runners are on base
         number_runners = 0
@@ -377,14 +396,14 @@ class BattingSim:
         # one runner
         elif number_runners == 1:
             # turn the runner advancement data into a counter object
-            data = Counter(_runner_movement_data[e][runner_bases[0]]["data"])
+            data = Counter(self.runner_movement_data[e][runner_bases[0]]["data"])
 
             # single
             if e == "1":
                 # get the probabilities required for the first runner
-                attempt_2 = round(float(data["2"] + data["x2"]) / _runner_movement_data[e][runner_bases[0]]["times"], 4) * 10000
-                attempt_3 = round(float(data["3"] + data["x3"]) / _runner_movement_data[e][runner_bases[0]]["times"], 4) * 10000
-                attempt_h = round(float(data["H"] + data["xH"]) / _runner_movement_data[e][runner_bases[0]]["times"], 4) * 10000
+                attempt_2 = round(float(data["2"] + data["x2"]) / self.runner_movement_data[e][runner_bases[0]]["times"], 4) * 10000
+                attempt_3 = round(float(data["3"] + data["x3"]) / self.runner_movement_data[e][runner_bases[0]]["times"], 4) * 10000
+                attempt_h = round(float(data["H"] + data["xH"]) / self.runner_movement_data[e][runner_bases[0]]["times"], 4) * 10000
                 if runner_bases[0] != "3":
                     success_2 = round(float(data["2"]) / (data["2"] + data["x2"]), 4) * 10000
                 success_3 = round(float(data["3"]) / (data["3"] + data["x3"]), 4) * 10000
@@ -448,8 +467,8 @@ class BattingSim:
             # double
             elif e == "2":
                 # get the probabilities required for the first runner
-                attempt_3 = round(float(data["3"] + data["x3"]) / _runner_movement_data[e][runner_bases[0]]["times"], 4) * 10000
-                attempt_h = round(float(data["H"] + data["xH"]) / _runner_movement_data[e][runner_bases[0]]["times"], 4) * 10000
+                attempt_3 = round(float(data["3"] + data["x3"]) / self.runner_movement_data[e][runner_bases[0]]["times"], 4) * 10000
+                attempt_h = round(float(data["H"] + data["xH"]) / self.runner_movement_data[e][runner_bases[0]]["times"], 4) * 10000
                 if runner_bases[0] != "3":
                     success_3 = round(float(data["3"]) / (data["3"] + data["x3"]), 4) * 10000
                 success_h = round(float(data["H"]) / (data["H"] + data["xH"]), 4) * 10000
@@ -517,24 +536,24 @@ class BattingSim:
         # two runners
         elif number_runners == 2:
             # turn the runner advancement data into counter objects for each runner
-            data = Counter(_runner_movement_data[e][runner_bases[0]]["data"])
-            data1 = Counter(_runner_movement_data[e][runner_bases[1]]["data"])
+            data = Counter(self.runner_movement_data[e][runner_bases[0]]["data"])
+            data1 = Counter(self.runner_movement_data[e][runner_bases[1]]["data"])
 
             # single
             if e == "1":
                 # get the probabilities for the lead runner
-                attempt_2 = round(float(data["2"] + data["x2"]) / _runner_movement_data[e][runner_bases[0]]["times"], 4) * 10000
-                attempt_3 = round(float(data["3"] + data["x3"]) / _runner_movement_data[e][runner_bases[0]]["times"], 4) * 10000
-                attempt_h = round(float(data["H"] + data["xH"]) / _runner_movement_data[e][runner_bases[0]]["times"], 4) * 10000
+                attempt_2 = round(float(data["2"] + data["x2"]) / self.runner_movement_data[e][runner_bases[0]]["times"], 4) * 10000
+                attempt_3 = round(float(data["3"] + data["x3"]) / self.runner_movement_data[e][runner_bases[0]]["times"], 4) * 10000
+                attempt_h = round(float(data["H"] + data["xH"]) / self.runner_movement_data[e][runner_bases[0]]["times"], 4) * 10000
                 if runner_bases[0] != "3":
                     success_2 = round(float(data["2"]) / (data["2"] + data["x2"]), 4) * 10000
                 success_3 = round(float(data["3"]) / (data["3"] + data["x3"]), 4) * 10000
                 success_h = round(float(data["H"]) / (data["H"] + data["xH"]), 4) * 10000
 
                 # get the probabilities for the other runner
-                attempt1_2 = round(float(data1["2"] + data1["x2"]) / _runner_movement_data[e][runner_bases[1]]["times"], 4) * 10000
-                attempt1_3 = round(float(data1["3"] + data1["x3"]) / _runner_movement_data[e][runner_bases[1]]["times"], 4) * 10000
-                attempt1_h = round(float(data1["H"] + data1["xH"]) / _runner_movement_data[e][runner_bases[1]]["times"], 4) * 10000
+                attempt1_2 = round(float(data1["2"] + data1["x2"]) / self.runner_movement_data[e][runner_bases[1]]["times"], 4) * 10000
+                attempt1_3 = round(float(data1["3"] + data1["x3"]) / self.runner_movement_data[e][runner_bases[1]]["times"], 4) * 10000
+                attempt1_h = round(float(data1["H"] + data1["xH"]) / self.runner_movement_data[e][runner_bases[1]]["times"], 4) * 10000
                 if runner_bases[1] != "3":
                     success1_2 = round(float(data1["2"]) / (data1["2"] + data1["x2"]), 4) * 10000
                 success1_3 = round(float(data1["3"]) / (data1["3"] + data1["x3"]), 4) * 10000
@@ -654,15 +673,15 @@ class BattingSim:
             # double
             if e == "2":
                 # get the probabilities for the lead runner
-                attempt_3 = round(float(data["3"] + data["x3"]) / _runner_movement_data[e][runner_bases[0]]["times"], 4) * 10000
-                attempt_h = round(float(data["H"] + data["xH"]) / _runner_movement_data[e][runner_bases[0]]["times"], 4) * 10000
+                attempt_3 = round(float(data["3"] + data["x3"]) / self.runner_movement_data[e][runner_bases[0]]["times"], 4) * 10000
+                attempt_h = round(float(data["H"] + data["xH"]) / self.runner_movement_data[e][runner_bases[0]]["times"], 4) * 10000
                 if runner_bases[0] != "3":
                     success_3 = round(float(data["3"]) / (data["3"] + data["x3"]), 4) * 10000
                 success_h = round(float(data["H"]) / (data["H"] + data["xH"]), 4) * 10000
 
                 # get the probabilities for the other runner
-                attempt1_3 = round(float(data1["3"] + data1["x3"]) / _runner_movement_data[e][runner_bases[1]]["times"], 4) * 10000
-                attempt1_h = round(float(data1["H"] + data1["xH"]) / _runner_movement_data[e][runner_bases[1]]["times"], 4) * 10000
+                attempt1_3 = round(float(data1["3"] + data1["x3"]) / self.runner_movement_data[e][runner_bases[1]]["times"], 4) * 10000
+                attempt1_h = round(float(data1["H"] + data1["xH"]) / self.runner_movement_data[e][runner_bases[1]]["times"], 4) * 10000
                 if runner_bases[1] != "3":
                     success1_3 = round(float(data1["3"]) / (data1["3"] + data1["x3"]), 4) * 10000
                 success1_h = round(float(data1["H"]) / (data1["H"] + data1["xH"]), 4) * 10000
@@ -788,25 +807,25 @@ class BattingSim:
         # three runners
         elif number_runners == 3:
             # data for runner on 3
-            data = Counter(_runner_movement_data[e]["3"]["data"])
+            data = Counter(self.runner_movement_data[e]["3"]["data"])
             # data for runner on 2
-            data1 = Counter(_runner_movement_data[e]["2"]["data"])
+            data1 = Counter(self.runner_movement_data[e]["2"]["data"])
             # data for runner on 1
-            data2 = Counter(_runner_movement_data[e]["1"]["data"])
+            data2 = Counter(self.runner_movement_data[e]["1"]["data"])
 
             # single
             if e == "1":
                 # necessary data for runner on 3
                 success_h = round(float(data["H"]) / (data["H"] + data["xH"]), 4) * 10000
                 # necessary data for runner on 2
-                attempt1_3 = round(float(data1["3"] + data1["x3"]) / _runner_movement_data[e]["2"]["times"], 4) * 10000
-                attempt1_h = round(float(data1["H"] + data1["xH"]) / _runner_movement_data[e]["2"]["times"], 4) * 10000
+                attempt1_3 = round(float(data1["3"] + data1["x3"]) / self.runner_movement_data[e]["2"]["times"], 4) * 10000
+                attempt1_h = round(float(data1["H"] + data1["xH"]) / self.runner_movement_data[e]["2"]["times"], 4) * 10000
                 success1_3 = round(float(data1["3"]) / (data1["3"] + data1["x3"]), 4) * 10000
                 success1_h = round(float(data1["H"]) / (data1["H"] + data1["xH"]), 4) * 10000
                 # necessary data for runner on 1
-                attempt2_2 = round(float(data2["2"] + data2["x2"]) / _runner_movement_data[e]["1"]["times"], 4) * 10000
-                attempt2_3 = round(float(data2["3"] + data2["x3"]) / _runner_movement_data[e]["1"]["times"], 4) * 10000
-                attempt2_h = round(float(data2["H"] + data2["xH"]) / _runner_movement_data[e]["1"]["times"], 4) * 10000
+                attempt2_2 = round(float(data2["2"] + data2["x2"]) / self.runner_movement_data[e]["1"]["times"], 4) * 10000
+                attempt2_3 = round(float(data2["3"] + data2["x3"]) / self.runner_movement_data[e]["1"]["times"], 4) * 10000
+                attempt2_h = round(float(data2["H"] + data2["xH"]) / self.runner_movement_data[e]["1"]["times"], 4) * 10000
                 success2_2 = round(float(data2["2"]) / (data2["2"] + data2["x2"]), 4) * 10000
                 success2_3 = round(float(data2["3"]) / (data2["3"] + data2["x3"]), 4) * 10000
                 success2_h = round(float(data2["H"]) / (data2["H"] + data2["xH"]), 4) * 10000
@@ -899,8 +918,8 @@ class BattingSim:
                 # necessary data for runner on 2
                 success1_h = round(float(data1["H"]) / (data1["H"] + data1["xH"]), 4) * 10000
                 # necessary data for runner on 1
-                attempt2_3 = round(float(data2["3"] + data2["x3"]) / _runner_movement_data[e]["1"]["times"], 4) * 10000
-                attempt2_h = round(float(data2["H"] + data2["xH"]) / _runner_movement_data[e]["1"]["times"], 4) * 10000
+                attempt2_3 = round(float(data2["3"] + data2["x3"]) / self.runner_movement_data[e]["1"]["times"], 4) * 10000
+                attempt2_h = round(float(data2["H"] + data2["xH"]) / self.runner_movement_data[e]["1"]["times"], 4) * 10000
                 success2_3 = round(float(data2["3"]) / (data2["3"] + data2["x3"]), 4) * 10000
                 success2_h = round(float(data2["H"]) / (data2["H"] + data2["xH"]), 4) * 10000
 
@@ -1012,3 +1031,24 @@ class BattingSim:
             self.out()
         else:
             raise Exception
+
+    def play_game(self):
+        """Runs through one game simulation and returns the score"""
+        while not self.game_over:
+            e = self.get_event()
+            self.adjust_game(e)
+            self.increment_batter()
+        return self.v_score, self.h_score
+
+    def sim(self):
+        """Play 1000 games and see who wins a majority of the time"""
+        for i in range(1000):
+            if i % 10 == 0:
+                print i
+                print '-' * 10
+            v_score, h_score = self.play_game()
+            if v_score > h_score:
+                self.v_wins += 1
+            if h_score > v_score:
+                self.h_wins += 1
+            self.reset()
