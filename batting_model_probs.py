@@ -35,7 +35,6 @@ def game():
     for i in range(1, 2431):
         if i % 5 == 0:
             print i
-        print i
         sim = batting.BattingSim(get_players(i)[0], get_players(i)[1])
         sim.sim()
         if sim.v_wins > sim.h_wins and get_scores(i)[0] > get_scores(i)[1]:
