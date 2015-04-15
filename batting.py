@@ -67,11 +67,11 @@ class BattingSim:
             # create sql SELECT statements
             v_sql = """SELECT (b.AB + b.BB + b.HBP + b.SF), (b.H - (b.2B + b.3B + b.HR)), b.2B, b.3B, b.HR, b.SO, b.BB,
             ((b.AB + b.BB + b.HBP + b.SF) - (b.H + b.BB + b.SO))
-            FROM batting b, master m WHERE CONCAT(m.nameFirst, ' ', m.nameLast) = '%s' AND b.yearID = 2013
+            FROM batting b, master m WHERE CONCAT(m.nameFirst, ' ', m.nameLast) = "%s" AND b.yearID = 2013
             AND b.playerID = m.playerID""" % (self.v_players[counter])
             h_sql = """SELECT (b.AB + b.BB + b.HBP + b.SF), (b.H - (b.2B + b.3B + b.HR)), b.2B, b.3B, b.HR, b.SO, b.BB,
             ((b.AB + b.BB + b.HBP + b.SF) - (b.H + b.BB + b.SO))
-            FROM batting b, master m WHERE CONCAT(m.nameFirst, ' ', m.nameLast) = '%s' AND b.yearID = 2013
+            FROM batting b, master m WHERE CONCAT(m.nameFirst, ' ', m.nameLast) = "%s" AND b.yearID = 2013
             AND b.playerID = m.playerID""" % (self.h_players[counter])
 
             # run sql SELECT statements
@@ -80,26 +80,49 @@ class BattingSim:
             self.cursor.execute(h_sql)
             h_results = self.cursor.fetchall()
 
-            # add values to the tmp dicts
-            v_tmp_stats['name'] = self.v_players[counter]
-            h_tmp_stats['name'] = self.h_players[counter]
-            # unpack the results into a dict
-            v_tmp_stats['PA'] = v_results[0][0]
-            h_tmp_stats['PA'] = h_results[0][0]
-            v_tmp_stats['1B'] = v_results[0][1]
-            h_tmp_stats['1B'] = h_results[0][1]
-            v_tmp_stats['2B'] = v_results[0][2]
-            h_tmp_stats['2B'] = h_results[0][2]
-            v_tmp_stats['3B'] = v_results[0][3]
-            h_tmp_stats['3B'] = h_results[0][3]
-            v_tmp_stats['HR'] = v_results[0][4]
-            h_tmp_stats['HR'] = h_results[0][4]
-            v_tmp_stats['SO'] = v_results[0][5]
-            h_tmp_stats['SO'] = h_results[0][5]
-            v_tmp_stats['BB'] = v_results[0][6]
-            h_tmp_stats['BB'] = h_results[0][6]
-            v_tmp_stats['O'] = v_results[0][7]
-            h_tmp_stats['O'] = h_results[0][7]
+            if len(v_results) == 0:
+                v_tmp_stats['name'] = self.v_players[counter]
+                v_tmp_stats['PA'] = 676
+                v_tmp_stats['1B'] = 132
+                v_tmp_stats['2B'] = 30
+                v_tmp_stats['3B'] = 3
+                v_tmp_stats['HR'] = 16
+                v_tmp_stats['SO'] = 139
+                v_tmp_stats['BB'] = 52
+                v_tmp_stats['O'] = 304
+            else:
+                v_tmp_stats['name'] = self.v_players[counter]
+                v_tmp_stats['PA'] = v_results[0][0]
+                v_tmp_stats['1B'] = v_results[0][1]
+                v_tmp_stats['2B'] = v_results[0][2]
+                v_tmp_stats['3B'] = v_results[0][3]
+                v_tmp_stats['HR'] = v_results[0][4]
+                v_tmp_stats['SO'] = v_results[0][5]
+                v_tmp_stats['BB'] = v_results[0][6]
+                v_tmp_stats['O'] = v_results[0][7]
+
+            if len(h_results) == 0:
+                h_tmp_stats['name'] = self.h_players[counter]
+                h_tmp_stats['PA'] = 676
+                h_tmp_stats['1B'] = 132
+                h_tmp_stats['2B'] = 30
+                h_tmp_stats['3B'] = 3
+                h_tmp_stats['HR'] = 16
+                h_tmp_stats['SO'] = 139
+                h_tmp_stats['BB'] = 52
+                h_tmp_stats['O'] = 304
+            else:
+                # add values to the tmp dicts
+                h_tmp_stats['name'] = self.h_players[counter]
+                # unpack the results into a dict
+                h_tmp_stats['PA'] = h_results[0][0]
+                h_tmp_stats['1B'] = h_results[0][1]
+                h_tmp_stats['2B'] = h_results[0][2]
+                h_tmp_stats['3B'] = h_results[0][3]
+                h_tmp_stats['HR'] = h_results[0][4]
+                h_tmp_stats['SO'] = h_results[0][5]
+                h_tmp_stats['BB'] = h_results[0][6]
+                h_tmp_stats['O'] = h_results[0][7]
 
             # add the current tmp players stats dict to the players lists
             v_players_stats.append(v_tmp_stats)
@@ -125,6 +148,13 @@ class BattingSim:
             # get the stats of player counter
             v_stats = v_players_stats[counter]
             h_stats = h_players_stats[counter]
+
+            if v_stats['PA'] == 0:
+                v_stats['PA'] = 1
+                v_stats['SO'] = 1
+            if h_stats['PA'] == 0:
+                h_stats['PA'] = 1
+                h_stats['SO'] = 1
 
             # populate the v_tmp_perc dictionary
             v_tmp_perc['1B'] = round(float(v_stats['1B'])/v_stats['PA'], 3)
@@ -1042,9 +1072,6 @@ class BattingSim:
     def sim(self):
         """Play 1000 games and see who wins a majority of the time"""
         for i in range(1000):
-            if i % 10 == 0:
-                print i
-                print '-' * 10
             v_score, h_score = self.play_game()
             if v_score > h_score:
                 self.v_wins += 1
