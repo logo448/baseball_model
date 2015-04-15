@@ -67,11 +67,11 @@ class BattingSim:
             # create sql SELECT statements
             v_sql = """SELECT (b.AB + b.BB + b.HBP + b.SF), (b.H - (b.2B + b.3B + b.HR)), b.2B, b.3B, b.HR, b.SO, b.BB,
             ((b.AB + b.BB + b.HBP + b.SF) - (b.H + b.BB + b.SO))
-            FROM batting b, master m WHERE CONCAT(m.nameFirst, ' ', m.nameLast) = "%s" AND b.yearID = 2013
+            FROM Batting b, Master m WHERE CONCAT(m.nameFirst, ' ', m.nameLast) = "%s" AND b.yearID = 2013
             AND b.playerID = m.playerID""" % (self.v_players[counter])
             h_sql = """SELECT (b.AB + b.BB + b.HBP + b.SF), (b.H - (b.2B + b.3B + b.HR)), b.2B, b.3B, b.HR, b.SO, b.BB,
             ((b.AB + b.BB + b.HBP + b.SF) - (b.H + b.BB + b.SO))
-            FROM batting b, master m WHERE CONCAT(m.nameFirst, ' ', m.nameLast) = "%s" AND b.yearID = 2013
+            FROM Batting b, Master m WHERE CONCAT(m.nameFirst, ' ', m.nameLast) = "%s" AND b.yearID = 2013
             AND b.playerID = m.playerID""" % (self.h_players[counter])
 
             # run sql SELECT statements
