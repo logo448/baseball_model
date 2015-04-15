@@ -1,9 +1,8 @@
 import csv
 import re
-import pickle
 
 
-with open("C:/Users/Logan/Documents/Baseball/2014eve/master.csv", "rb") as f:
+with open("data.csv", "rb") as f:
     reader = csv.reader(f, delimiter=',')
     data = []
     for tmprow in reader:
