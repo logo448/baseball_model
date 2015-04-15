@@ -7,8 +7,8 @@ _cursor = db.cursor()
 
 
 def get_players(num):
-    v_command = """SELECT v1, v2, v3, v4, v5, v6, v7, v8, v9 FROM gamelog WHERE id = %i""" % num
-    h_command = """SELECT h1, h2, h3, h4, h5, h6, h7, h8, h9 FROM gamelog WHERE id = %i""" % num
+    v_command = """SELECT v1, v2, v3, v4, v5, v6, v7, v8, v9 FROM Gamelog WHERE id = %i""" % num
+    h_command = """SELECT h1, h2, h3, h4, h5, h6, h7, h8, h9 FROM Gamelog WHERE id = %i""" % num
 
     _cursor.execute(v_command)
     v_results = _cursor.fetchall()
@@ -19,7 +19,7 @@ def get_players(num):
 
 
 def get_scores(num):
-    command = """SELECT visiting_score, home_score FROM gamelog WHERE %i = id""" % num
+    command = """SELECT visiting_score, home_score FROM Gamelog WHERE %i = id""" % num
 
     _cursor.execute(command)
     results = _cursor.fetchall()
